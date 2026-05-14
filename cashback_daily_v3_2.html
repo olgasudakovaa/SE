@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор кэшбэка — Абонемент</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:            #FFFFFF;
+  --surface:       #F7F7FA;
+  --surface2:      #EFEFF3;
+  --border:        #E0E0E8;
+  --border2:       #CBCBD8;
+  --text:          #1A1A1A;
+  --text2:         #555566;
+  --text3:         #999AAD;
+
+  --indigo:        #2B2980;
+  --indigo-mid:    #5452CC;
+  --indigo-light:  #8887E0;
+  --indigo-pale:   #EEEEFF;
+
+  --green:         #3CB96A;
+  --green-dim:     rgba(60,185,106,.10);
+  --green-border:  rgba(60,185,106,.25);
+  --green-light:   #E8F8EF;
+  --green-dark:    #2A9050;
+
+  --gray:          #C0C0C0;
+
+  --orange:        #F5A623;
+  --orange-dim:    rgba(245,166,35,.10);
+  --orange-border: rgba(245,166,35,.25);
+  --orange-dark:   #C07800;
+
+  --red:           #E53935;
+  --red-light:     #FFF0F0;
+  --red-border:    rgba(229,57,53,.2);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+  padding: 36px 28px;
+}
+.container { max-width: 1160px; margin: 0 auto; }
+
+/* ── Header ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--indigo-pale); border: 1px solid rgba(84,82,204,.18);
+  border-radius: 100px; padding: 4px 14px 4px 10px;
+  font-size: 11px; font-weight: 700; color: var(--indigo-mid);
+  letter-spacing: .06em; text-transform: uppercase; margin-bottom: 12px;
+}
+.badge .dot { width: 7px; height: 7px; background: var(--indigo-mid); border-radius: 50%; }
+h1 { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+h1 span { color: var(--indigo); }
+.header-sub { font-size: 13px; color: var(--text3); margin-bottom: 28px; }
+
+/* ── Section label ── */
+.section-title {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+}
+.section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+/* ── Settings grid ── */
+.settings { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+.setting-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.setting-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.setting-input-wrap { position: relative; display: flex; align-items: center; }
+.setting-input {
+  width: 100%; background: #fff; border: 1px solid var(--border2);
+  border-radius: 8px; padding: 9px 36px 9px 12px;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+  color: var(--text); outline: none; transition: border-color .2s;
+  -moz-appearance: textfield;
+}
+.setting-input[type="date"] { padding-right: 12px; font-size: 12px; cursor: pointer; }
+.setting-input::-webkit-outer-spin-button, .setting-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.setting-input::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.5; }
+.setting-input:focus { border-color: var(--indigo-mid); box-shadow: 0 0 0 3px rgba(84,82,204,.1); }
+.setting-suffix { position: absolute; right: 10px; font-size: 11px; font-weight: 600; color: var(--text3); pointer-events: none; }
+
+/* ── Toolbar ── */
+.toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.toolbar-label { font-size: 12px; color: var(--text3); white-space: nowrap; font-weight: 500; }
+.fill-input {
+  background: #fff; border: 1px solid var(--border2); border-radius: 8px;
+  padding: 7px 12px; font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 700; color: var(--text);
+  outline: none; width: 140px; transition: border-color .2s; -moz-appearance: textfield;
+}
+.fill-input::-webkit-outer-spin-button, .fill-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.fill-input:focus { border-color: var(--indigo-mid); box-shadow: 0 0 0 3px rgba(84,82,204,.1); }
+.btn {
+  padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border2);
+  background: var(--surface); color: var(--text2);
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn:hover { background: var(--indigo-pale); border-color: var(--indigo-mid); color: var(--indigo); }
+.btn.primary { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+.btn.primary:hover { background: var(--indigo-mid); }
+.btn.danger:hover { background: var(--red-light); border-color: rgba(229,57,53,.3); color: var(--red); }
+.sep { width: 1px; height: 22px; background: var(--border); }
+
+/* ── Cards ── */
+.cards-row { display: grid; gap: 12px; margin-bottom: 20px; }
+.cards-5 { grid-template-columns: repeat(5, 1fr); }
+.cards-4 { grid-template-columns: repeat(4, 1fr); }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.card-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.card-value { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.1; }
+.card-sub { font-size: 11px; color: var(--text3); margin-top: 4px; line-height: 1.4; }
+
+.card.c-indigo { border-color: rgba(43,41,128,.2); background: var(--indigo-pale); }
+.card.c-indigo .card-value { color: var(--indigo); }
+
+.card.c-green { border-color: var(--green-border); background: var(--green-light); }
+.card.c-green .card-value { color: var(--green-dark); }
+
+.card.c-orange { border-color: var(--orange-border); background: rgba(245,166,35,.06); }
+.card.c-orange .card-value { color: var(--orange-dark); }
+
+.card.c-red { border-color: var(--red-border); background: var(--red-light); }
+.card.c-red .card-value { color: var(--red); }
+
+.card.c-gray { border-color: rgba(192,192,192,.35); background: #FAFAFA; }
+.card.c-gray .card-value { color: #666; }
+
+/* Payback progress inside card */
+.pb-track { height: 5px; background: var(--border); border-radius: 100px; overflow: hidden; margin-top: 10px; }
+.pb-bar   { height: 100%; border-radius: 100px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+.pb-bar.green  { background: linear-gradient(90deg, var(--green-dark), var(--green)); }
+.pb-bar.indigo { background: linear-gradient(90deg, var(--indigo), var(--indigo-mid)); }
+.pb-bar.orange { background: linear-gradient(90deg, var(--orange-dark), var(--orange)); }
+
+/* ── Chart container ── */
+.chart-wrap {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; margin-bottom: 20px;
+}
+.chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.chart-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.chart-sub { font-size: 11px; color: var(--text3); }
+.chart-legend { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); font-weight: 500; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.legend-line { width: 18px; height: 2px; flex-shrink: 0; border-radius: 1px; }
+.legend-dash { width: 18px; height: 0; border-top: 2px dashed; flex-shrink: 0; }
+
+canvas { display: block; width: 100%; }
+
+/* ── Progress ── */
+.progress-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+}
+.prog-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 5px; font-weight: 500; }
+.prog-track { height: 7px; background: var(--border); border-radius: 100px; overflow: hidden; margin-bottom: 12px; }
+.prog-track:last-child { margin-bottom: 0; }
+.prog-bar { height: 100%; border-radius: 100px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+/* ── Table ── */
+.table-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.table-scroll { overflow-x: auto; max-height: 480px; overflow-y: auto; }
+.table-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+.table-scroll::-webkit-scrollbar-track { background: var(--surface); }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+table { width: 100%; border-collapse: collapse; }
+thead { position: sticky; top: 0; z-index: 10; }
+thead tr { background: var(--surface); border-bottom: 2px solid var(--border); }
+th { padding: 10px 14px; font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; text-align: right; white-space: nowrap; }
+th:first-child, th:nth-child(2) { text-align: left; }
+th .swatch { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:4px; vertical-align:middle; }
+.th-hint { font-size:9px; font-weight:500; color:var(--text3); letter-spacing:0; text-transform:none; margin-left:2px; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--indigo-pale); }
+tbody tr.weekend { background: #FAFAFF; }
+tbody tr.weekend:hover { background: var(--indigo-pale); }
+tbody tr.breakeven-row { background: #E8F8EF !important; }
+td { padding: 8px 14px; font-size: 12px; text-align: right; color: var(--text2); }
+td:first-child { text-align: left; font-size: 11px; color: var(--text3); white-space: nowrap; }
+td:nth-child(2) { text-align: left; font-size: 11px; }
+.spend-inp {
+  width: 130px; background: transparent; border: 1px solid transparent;
+  border-radius: 6px; padding: 4px 8px;
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+  color: var(--indigo); outline: none; transition: all .15s; text-align: right;
+  -moz-appearance: textfield;
+}
+.spend-inp::-webkit-outer-spin-button, .spend-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.spend-inp:hover { border-color: var(--border2); background: #fff; }
+.spend-inp:focus { border-color: var(--indigo-mid); background: #fff; box-shadow: 0 0 0 2px rgba(84,82,204,.12); }
+.col-bop   { color: var(--text3) !important; font-size: 11px !important; }
+.col-usage { color: var(--orange-dark) !important; font-weight: 700 !important; }
+.col-cash  { font-weight: 700 !important; }
+.col-cash.saved { color: var(--green-dark) !important; }
+.col-acc   { color: var(--green-dark) !important; font-weight: 700 !important; }
+.col-eop   { color: var(--indigo) !important; font-weight: 700 !important; }
+.col-cum   { color: var(--indigo-mid) !important; font-size: 11px !important; }
+.zero { color: var(--text3) !important; font-weight: 400 !important; }
+.be-tag { display:inline-block; background: var(--green); color:#fff; font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; margin-left:4px; vertical-align:middle; letter-spacing:.04em; }
+tfoot { position: sticky; bottom: 0; z-index: 10; }
+tfoot tr { background: var(--surface); border-top: 2px solid var(--border); }
+tfoot td { padding: 10px 14px; font-size: 11px; font-weight: 800; color: var(--text); }
+
+/* ── BoP / EoP explanation ── */
+.bop-eop-legend {
+  display: flex; align-items: stretch; gap: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 20px; margin-top: 16px;
+  flex-wrap: wrap; gap: 0;
+}
+.bop-eop-item { display: flex; align-items: flex-start; gap: 10px; flex: 1; min-width: 220px; padding: 4px 16px 4px 0; }
+.bop-eop-sep { width: 1px; background: var(--border); margin: 0 16px; align-self: stretch; }
+.bop-eop-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 6px; padding: 4px 9px; font-size: 11px; font-weight: 800;
+  letter-spacing: .04em; white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+}
+.bop-eop-badge.bop  { background: rgba(245,166,35,.15); color: #C07800; }
+.bop-eop-badge.eop  { background: var(--indigo-pale);   color: var(--indigo); }
+.bop-eop-badge.flow { background: var(--green-light);   color: var(--green-dark); font-size: 14px; padding: 2px 8px; }
+.bop-eop-text { font-size: 12px; color: var(--text2); line-height: 1.55; }
+.bop-eop-text strong { color: var(--text); }
+
+/* ── Weekday template ── */
+.weekday-template {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px; margin-bottom: 0;
+}
+.wt-label { font-size: 11px; font-weight: 700; color: var(--text2); margin-bottom: 12px; }
+.wt-hint  { font-weight: 400; color: var(--text3); }
+.wt-row   { display: flex; align-items: flex-end; gap: 8px; flex-wrap: wrap; }
+.wt-day   { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.wt-day-name {
+  font-size: 10px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.weekend-day .wt-day-name { color: var(--indigo-mid); }
+.wt-inp {
+  width: 90px; background: #fff; border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 10px;
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+  color: var(--text); outline: none; text-align: right;
+  transition: border-color .2s; -moz-appearance: textfield;
+}
+.wt-inp::-webkit-outer-spin-button, .wt-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+.wt-inp:focus { border-color: var(--indigo-mid); box-shadow: 0 0 0 3px rgba(84,82,204,.1); }
+.weekend-day .wt-inp:focus { border-color: var(--indigo-mid); }
+.wt-actions { display: flex; flex-direction: column; gap: 6px; margin-left: 8px; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.section-block { animation: fadeUp .35s ease both; }
+.section-block:nth-child(2) { animation-delay:.05s; }
+.section-block:nth-child(3) { animation-delay:.10s; }
+.section-block:nth-child(4) { animation-delay:.15s; }
+.section-block:nth-child(5) { animation-delay:.20s; }
+.section-block:nth-child(6) { animation-delay:.25s; }
+.section-block:nth-child(7) { animation-delay:.30s; }
+.section-block:nth-child(8) { animation-delay:.35s; }
+
+@media(max-width:960px) { .settings,.cards-5{grid-template-columns:repeat(3,1fr);} .cards-4{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:600px)  { .settings,.cards-5,.cards-4{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ① Header -->
+<div class="section-block">
+  <div class="badge"><span class="dot"></span>Ежедневный расчёт</div>
+  <h1>Калькулятор <span>кэшбэка</span> по абонементу</h1>
+  <p class="header-sub">Ежедневный расчёт кэшбэка по модели абонемента</p>
+  <div class="bop-eop-legend">
+    <div class="bop-eop-item">
+      <span class="bop-eop-badge bop">BoP</span>
+      <span class="bop-eop-text"><strong>Beginning of Period</strong> — остаток кэшбэка на <strong>начало дня</strong>. Равен EoP предыдущего дня. Идёт в зачёт оплаты.</span>
+    </div>
+    <div class="bop-eop-sep"></div>
+    <div class="bop-eop-item">
+      <span class="bop-eop-badge eop">EoP</span>
+      <span class="bop-eop-text"><strong>End of Period</strong> — остаток кэшбэка на <strong>конец дня</strong>. Формула: BoP − Зачёт + Начислено (15% от откруток).</span>
+    </div>
+    <div class="bop-eop-sep"></div>
+    <div class="bop-eop-item">
+      <span class="bop-eop-badge flow">→</span>
+      <span class="bop-eop-text"><strong>Цепочка:</strong> EoP каждого дня автоматически становится BoP следующего.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ② Параметры -->
+<div class="section-block">
+  <div class="section-title">Параметры</div>
+  <div class="settings">
+    <div class="setting-card">
+      <div class="setting-label">Дата начала</div>
+      <div class="setting-input-wrap">
+        <input type="date" class="setting-input" id="start-date" value="2026-01-01">
+      </div>
+    </div>
+    <div class="setting-card">
+      <div class="setting-label">Дней периода</div>
+      <div class="setting-input-wrap">
+        <input type="number" class="setting-input" id="num-days" value="90" min="1" max="730" step="1">
+        <span class="setting-suffix">дн</span>
+      </div>
+    </div>
+    <div class="setting-card">
+      <div class="setting-label">Ставка кэшбэка</div>
+      <div class="setting-input-wrap">
+        <input type="number" class="setting-input" id="rate" value="15" min="1" max="50" step="0.5">
+        <span class="setting-suffix">%</span>
+      </div>
+    </div>
+    <div class="setting-card">
+      <div class="setting-label">Стоимость абонемента</div>
+      <div class="setting-input-wrap">
+        <input type="number" class="setting-input" id="sub-cost" value="15000000" step="500000">
+        <span class="setting-suffix">₽</span>
+      </div>
+    </div>
+    <div class="setting-card">
+      <div class="setting-label">Кэшбэк BoP (стартовый)</div>
+      <div class="setting-input-wrap">
+        <input type="number" class="setting-input" id="init-bop" value="0" step="10000">
+        <span class="setting-suffix">₽</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ Заполнение откруток -->
+<div class="section-block">
+  <div class="section-title">Настройка откруток</div>
+
+  <!-- По дням недели -->
+  <div class="weekday-template">
+    <div class="wt-label">Шаблон по дням недели <span class="wt-hint">— задайте сумму для каждого дня и нажмите «Применить»</span></div>
+    <div class="wt-row">
+      <div class="wt-day" data-day="1"><div class="wt-day-name">Пн</div><input type="number" class="wt-inp" id="wt-1" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-day" data-day="2"><div class="wt-day-name">Вт</div><input type="number" class="wt-inp" id="wt-2" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-day" data-day="3"><div class="wt-day-name">Ср</div><input type="number" class="wt-inp" id="wt-3" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-day" data-day="4"><div class="wt-day-name">Чт</div><input type="number" class="wt-inp" id="wt-4" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-day" data-day="5"><div class="wt-day-name">Пт</div><input type="number" class="wt-inp" id="wt-5" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-day weekend-day" data-day="6"><div class="wt-day-name">Сб</div><input type="number" class="wt-inp" id="wt-6" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-day weekend-day" data-day="0"><div class="wt-day-name">Вс</div><input type="number" class="wt-inp" id="wt-0" placeholder="0" step="10000" min="0"></div>
+      <div class="wt-actions">
+        <button class="btn primary" onclick="applyTemplate()">Применить шаблон</button>
+        <button class="btn" onclick="fillAllSame()">Заполнить одинаково</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Быстрое заполнение -->
+  <div class="toolbar" style="margin-top:10px">
+    <span class="toolbar-label">Одна сумма на все:</span>
+    <input type="number" class="fill-input" id="fill-val" placeholder="сумма в день" step="10000">
+    <button class="btn primary" onclick="fillAll()">Все дни</button>
+    <button class="btn" onclick="fillWeekdays()">Будни</button>
+    <button class="btn" onclick="fillWeekends()">Выходные</button>
+    <div class="sep"></div>
+    <button class="btn danger" onclick="clearAll()">Очистить всё</button>
+  </div>
+</div>
+
+<!-- ④ Итоги периода -->
+<div class="section-block">
+  <div class="section-title">Итоги периода</div>
+  <div class="cards-row cards-5">
+    <div class="card c-indigo">
+      <div class="card-label">Всего откруток</div>
+      <div class="card-value" id="s-spend">—</div>
+      <div class="card-sub" id="s-sub-pct">0% абонемента</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Оплата деньгами</div>
+      <div class="card-value" id="s-cash">—</div>
+      <div class="card-sub">фактический расход</div>
+    </div>
+    <div class="card c-orange">
+      <div class="card-label">Кэшбэк использован</div>
+      <div class="card-value" id="s-used">—</div>
+      <div class="card-sub" id="s-used-pct">зачтено в оплату</div>
+    </div>
+    <div class="card c-green">
+      <div class="card-label">Кэшбэк начислен</div>
+      <div class="card-value" id="s-acc">—</div>
+      <div class="card-sub">за весь период</div>
+    </div>
+    <div class="card c-indigo">
+      <div class="card-label">Остаток EoP</div>
+      <div class="card-value" id="s-eop">—</div>
+      <div class="card-sub">на конец периода</div>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <div class="prog-row"><span>Освоение абонемента</span><span id="prog-sub-lbl">—</span></div>
+    <div class="prog-track">
+      <div class="prog-bar pb-bar indigo" id="prog-sub" style="width:0%"></div>
+    </div>
+    <div class="prog-row"><span>Зачёт кэшбэка от откруток</span><span id="prog-eco-lbl">—</span></div>
+    <div class="prog-track" style="margin-bottom:0">
+      <div class="prog-bar pb-bar green" id="prog-eco" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ Окупаемость абонемента -->
+<div class="section-block">
+  <div class="section-title">Окупаемость абонемента</div>
+  <div class="cards-row cards-4">
+    <div class="card c-gray">
+      <div class="card-label">Стоимость абонемента</div>
+      <div class="card-value" id="pb-cost">—</div>
+      <div class="card-sub">нужно отбить кэшбэком</div>
+    </div>
+    <div class="card c-indigo">
+      <div class="card-label">Точка окупаемости (откруток)</div>
+      <div class="card-value" id="pb-threshold">—</div>
+      <div class="card-sub" id="pb-threshold-sub">при ставке 15%: стоимость ÷ 0.15</div>
+    </div>
+    <div class="card" id="pb-status-card">
+      <div class="card-label">Накоплено кэшбэка</div>
+      <div class="card-value" id="pb-accumulated">—</div>
+      <div class="card-sub" id="pb-pct-sub">% от стоимости абонемента</div>
+      <div class="pb-track"><div class="pb-bar green" id="pb-prog" style="width:0%"></div></div>
+    </div>
+    <div class="card" id="pb-result-card">
+      <div class="card-label" id="pb-result-label">Статус окупаемости</div>
+      <div class="card-value" id="pb-result-val">—</div>
+      <div class="card-sub" id="pb-result-sub">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑥ График окупаемости по месяцам -->
+<div class="section-block">
+  <div class="chart-wrap">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">График окупаемости абонемента по месяцам</div>
+        <div class="chart-sub">Ежемесячные открутки, накопленный кэшбэк и точка окупаемости</div>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--indigo)"></div>Открутки</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Кэшбэк начислен</div>
+        <div class="legend-item"><div class="legend-line" style="background:var(--indigo-mid)"></div>Накопл. кэшбэк</div>
+        <div class="legend-item"><div class="legend-dash" style="border-color:var(--red)"></div>Стоимость абонемента</div>
+      </div>
+    </div>
+    <canvas id="chart" height="300"></canvas>
+    <div id="chart-empty" style="text-align:center;padding:60px;color:var(--text3);font-size:13px;display:none">
+      Введите открутки выше, чтобы увидеть график
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ Ежедневный расчёт -->
+<div class="section-block">
+  <div class="section-title">Ежедневный расчёт</div>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--indigo)"></div>Открутки</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--gray)"></div>Кэшбэк BoP</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Зачёт</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Начислено</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--indigo-mid)"></div>Кэшбэк EoP → след. BoP</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--indigo-light)"></div>Накопл. кэшбэк</div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>День</th>
+            <th><span class="swatch" style="background:var(--indigo)"></span>Открутки ₽</th>
+            <th><span class="swatch" style="background:var(--gray)"></span>Кэшбэк BoP <span class="th-hint">нач. дня</span></th>
+            <th><span class="swatch" style="background:var(--orange)"></span>Зачёт</th>
+            <th>Оплата ₽</th>
+            <th><span class="swatch" style="background:var(--green)"></span>Начислено</th>
+            <th><span class="swatch" style="background:var(--indigo-mid)"></span>Кэшбэк EoP <span class="th-hint">кон. дня</span></th>
+            <th><span class="swatch" style="background:var(--indigo-light)"></span>Накопл. КБ</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2">Итого</td>
+            <td id="f-spend" style="color:var(--indigo)">—</td>
+            <td>—</td>
+            <td id="f-usage" style="color:var(--orange-dark)">—</td>
+            <td id="f-cash">—</td>
+            <td id="f-acc" style="color:var(--green-dark)">—</td>
+            <td id="f-eop" style="color:var(--indigo)">—</td>
+            <td>—</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+const DAY_NAMES   = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const MONTH_SHORT = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+
+let spendValues = [];
+let rows = [];
+
+/* ── helpers ── */
+function getS() {
+  const startStr = document.getElementById('start-date').value;
+  return {
+    startDate: startStr ? new Date(startStr + 'T00:00:00') : new Date('2026-01-01T00:00:00'),
+    numDays:   Math.max(1, Math.min(730, parseInt(document.getElementById('num-days').value) || 90)),
+    rate:      (parseFloat(document.getElementById('rate').value) || 15) / 100,
+    subCost:   parseFloat(document.getElementById('sub-cost').value) || 15000000,
+    initBop:   parseFloat(document.getElementById('init-bop').value) || 0,
+  };
+}
+const fmtN = n => new Intl.NumberFormat('ru-RU').format(Math.round(n));
+function fmtShort(n) {
+  if (!n || n === 0) return '—';
+  if (n >= 1e9) return (n/1e9).toFixed(2).replace(/\.?0+$/,'') + ' млрд ₽';
+  if (n >= 1e6) return (n/1e6).toFixed(2).replace(/\.?0+$/,'') + ' млн ₽';
+  if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'') + ' тыс ₽';
+  return Math.round(n) + ' ₽';
+}
+function fmtCell(n) {
+  return n > 0 ? fmtN(n) : '<span class="zero">—</span>';
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' });
+}
+function monthKey(d) { return d.getFullYear() * 100 + d.getMonth(); }
+function monthLabel(d) { return MONTH_SHORT[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2); }
+
+/* ── build rows array ── */
+function buildRows() {
+  const { startDate, numDays } = getS();
+  rows = [];
+  for (let i = 0; i < numDays; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    rows.push({ date: d, dayIdx: d.getDay(), isWeekend: d.getDay()===0 || d.getDay()===6 });
+  }
+  while (spendValues.length < numDays) spendValues.push(0);
+  spendValues = spendValues.slice(0, numDays);
+}
+
+/* ── render editable table rows ── */
+function renderTable() {
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  rows.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    if (r.isWeekend) tr.className = 'weekend';
+    tr.id = `row-${i}`;
+    tr.innerHTML = `
+      <td>${fmtDate(r.date)}</td>
+      <td style="color:${r.isWeekend?'var(--indigo-mid)':'var(--text3)'};font-weight:${r.isWeekend?600:400}">${DAY_NAMES[r.dayIdx]}</td>
+      <td><div style="display:flex;justify-content:flex-end">
+        <input type="number" class="spend-inp" data-idx="${i}" value="${spendValues[i]||''}" placeholder="0" step="10000" min="0">
+      </div></td>
+      <td class="col-bop"  id="c-bop-${i}">—</td>
+      <td class="col-usage" id="c-use-${i}">—</td>
+      <td class="col-cash"  id="c-cash-${i}">—</td>
+      <td class="col-acc"   id="c-acc-${i}">—</td>
+      <td class="col-eop"   id="c-eop-${i}">—</td>
+      <td class="col-cum"   id="c-cum-${i}">—</td>`;
+    tbody.appendChild(tr);
+    tr.querySelector('input').addEventListener('input', function() {
+      spendValues[i] = parseFloat(this.value) || 0;
+      recalc();
+    });
+  });
+}
+
+/* ── main recalc ── */
+function recalc() {
+  const { rate, subCost, initBop } = getS();
+  let bop = initBop;
+  let totSpend=0, totCash=0, totUsage=0, totAcc=0, cumAcc=0;
+  let breakevenDayIdx = -1;
+
+  /* daily pass */
+  const daily = rows.map((_, i) => {
+    const spend   = spendValues[i] || 0;
+    const usage   = Math.min(bop, spend);
+    const cashPay = spend - usage;
+    const acc     = spend * rate;
+    const eop     = bop - usage + acc;
+    cumAcc += acc;
+    const cum = cumAcc;
+    if (breakevenDayIdx < 0 && cumAcc >= subCost) breakevenDayIdx = i;
+    totSpend += spend; totCash += cashPay; totUsage += usage; totAcc += acc;
+    const res = { spend, usage, cashPay, acc, eop, bop, cum };
+    bop = eop;
+    return res;
+  });
+  const finalEop = bop;
+
+  /* update table cells */
+  daily.forEach((d, i) => {
+    const cashEl = document.getElementById(`c-cash-${i}`);
+    document.getElementById(`c-bop-${i}`).innerHTML  = fmtCell(d.bop);
+    document.getElementById(`c-use-${i}`).innerHTML  = fmtCell(d.usage);
+    cashEl.innerHTML  = d.spend > 0 ? fmtN(d.cashPay) : '<span class="zero">—</span>';
+    cashEl.className  = 'col-cash ' + (d.usage>0 && d.spend>0 ? 'saved' : '');
+    document.getElementById(`c-acc-${i}`).innerHTML  = fmtCell(d.acc);
+    document.getElementById(`c-eop-${i}`).innerHTML  = fmtCell(d.eop);
+    document.getElementById(`c-cum-${i}`).innerHTML  = d.cum > 0 ? fmtN(d.cum) : '<span class="zero">—</span>';
+    const row = document.getElementById(`row-${i}`);
+    if (i === breakevenDayIdx) {
+      row.classList.add('breakeven-row');
+      document.getElementById(`c-cum-${i}`).innerHTML +=
+        ' <span class="be-tag">✓ ОКУПАЕМОСТЬ</span>';
+    } else {
+      row.classList.remove('breakeven-row');
+    }
+  });
+
+  /* footer */
+  document.getElementById('f-spend').innerHTML = fmtCell(totSpend);
+  document.getElementById('f-usage').innerHTML = fmtCell(totUsage);
+  document.getElementById('f-cash').innerHTML  = totCash > 0 ? fmtN(totCash) : '<span class="zero">—</span>';
+  document.getElementById('f-acc').innerHTML   = fmtCell(totAcc);
+  document.getElementById('f-eop').innerHTML   = fmtCell(finalEop);
+
+  /* summary cards */
+  const subPct = totSpend > 0 ? totSpend/subCost*100 : 0;
+  const ecoPct = totSpend > 0 ? totUsage/totSpend*100 : 0;
+  document.getElementById('s-spend').textContent   = fmtShort(totSpend);
+  document.getElementById('s-cash').textContent    = fmtShort(totCash);
+  document.getElementById('s-used').textContent    = fmtShort(totUsage);
+  document.getElementById('s-acc').textContent     = fmtShort(totAcc);
+  document.getElementById('s-eop').textContent     = fmtShort(finalEop);
+  document.getElementById('s-sub-pct').textContent = subPct.toFixed(1) + '% абонемента';
+  document.getElementById('s-used-pct').textContent = ecoPct.toFixed(1) + '% от откруток';
+  document.getElementById('prog-sub').style.width  = Math.min(100, subPct).toFixed(1) + '%';
+  document.getElementById('prog-eco').style.width  = Math.min(100, ecoPct).toFixed(1) + '%';
+  document.getElementById('prog-sub-lbl').textContent = `${fmtShort(totSpend)} из ${fmtShort(subCost)} (${subPct.toFixed(1)}%)`;
+  document.getElementById('prog-eco-lbl').textContent = `${fmtShort(totUsage)} зачтено (${ecoPct.toFixed(1)}%)`;
+
+  /* payback section */
+  const pbThreshold = subCost / rate;
+  document.getElementById('pb-cost').textContent = fmtShort(subCost);
+  document.getElementById('pb-threshold').textContent = fmtShort(pbThreshold);
+  document.getElementById('pb-threshold-sub').textContent = `${fmtShort(subCost)} ÷ ${(rate*100).toFixed(1)}%`;
+  document.getElementById('pb-accumulated').textContent = fmtShort(totAcc);
+  const pbPct = Math.min(100, totAcc/subCost*100);
+  document.getElementById('pb-pct-sub').textContent = pbPct.toFixed(1) + '% от стоимости абонемента';
+  document.getElementById('pb-prog').style.width = pbPct.toFixed(1) + '%';
+
+  const resultCard = document.getElementById('pb-result-card');
+  const resultVal  = document.getElementById('pb-result-val');
+  const resultSub  = document.getElementById('pb-result-sub');
+  const resultLbl  = document.getElementById('pb-result-label');
+
+  if (breakevenDayIdx >= 0) {
+    const beDay = rows[breakevenDayIdx].date;
+    const netProfit = totAcc - subCost;
+    resultCard.className = 'card c-green';
+    resultLbl.textContent = 'Окупается';
+    resultVal.textContent = fmtDate(beDay) + ' (день ' + (breakevenDayIdx+1) + ')';
+    resultSub.textContent = `Чистая выгода за период: ${fmtShort(netProfit)}`;
+  } else if (totAcc > 0) {
+    const gap = subCost - totAcc;
+    const daysLeft = totSpend > 0 ? Math.ceil(gap / (totSpend / rows.length) / rate) : null;
+    resultCard.className = 'card c-orange';
+    resultLbl.textContent = 'Не окупился в периоде';
+    resultVal.textContent = `Не хватает ${fmtShort(gap)}`;
+    resultSub.textContent = daysLeft ? `≈ ещё ${daysLeft} дн. при текущем темпе` : 'Увеличьте открутки';
+  } else {
+    resultCard.className = 'card c-gray';
+    resultLbl.textContent = 'Статус окупаемости';
+    resultVal.textContent = '—';
+    resultSub.textContent = 'Введите открутки для расчёта';
+  }
+
+  /* monthly aggregation for chart */
+  const monthMap = new Map();
+  daily.forEach((d, i) => {
+    const key = monthKey(rows[i].date);
+    if (!monthMap.has(key)) monthMap.set(key, { label: monthLabel(rows[i].date), spend:0, acc:0, cumAcc:0 });
+    const m = monthMap.get(key);
+    m.spend += d.spend;
+    m.acc   += d.acc;
+    m.cumAcc = d.cum;   // last day of month = EoM cumulative
+  });
+  const months = Array.from(monthMap.values());
+
+  drawChart(months, subCost);
+}
+
+/* ── Canvas chart ── */
+function drawChart(months, subCost) {
+  const canvas = document.getElementById('chart');
+  const empty  = document.getElementById('chart-empty');
+  const hasData = months.some(m => m.spend > 0);
+
+  if (!hasData || months.length === 0) {
+    canvas.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  canvas.style.display = 'block';
+  empty.style.display = 'none';
+
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.parentElement.clientWidth - 48;
+  const H = 300;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const PAD = { top:24, right:20, bottom:48, left:72 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+
+  /* y-scale: max of (spend, subCost, cumAcc) on left axis */
+  const maxSpend  = Math.max(...months.map(m => m.spend), 1);
+  const maxCumAcc = Math.max(...months.map(m => m.cumAcc), subCost, 1);
+  const yMax      = Math.max(maxSpend, maxCumAcc) * 1.12;
+
+  function yPx(v) { return PAD.top + cH * (1 - v / yMax); }
+  function xPx(i, offset=0) {
+    const step = cW / months.length;
+    return PAD.left + step * i + step * offset;
+  }
+
+  /* grid lines */
+  const gridCount = 5;
+  ctx.strokeStyle = '#E8E8F0';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  for (let g = 0; g <= gridCount; g++) {
+    const v = yMax * g / gridCount;
+    const y = yPx(v);
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(PAD.left + cW, y);
+    ctx.stroke();
+    /* y label */
+    ctx.fillStyle = '#999AAD';
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'right';
+    ctx.fillText(fmtShort(v).replace(' ₽',''), PAD.left - 6, y + 3.5);
+  }
+
+  /* bars: spend (indigo) + acc (green) side by side */
+  const step   = cW / months.length;
+  const bW     = step * 0.32;
+  const gap    = step * 0.06;
+  const groupX = step * 0.5 - bW - gap / 2;   // left bar offset within slot
+
+  months.forEach((m, i) => {
+    const xBase = PAD.left + step * i;
+
+    /* spend bar */
+    const spH = cH * (m.spend / yMax);
+    const spY = PAD.top + cH - spH;
+    ctx.fillStyle = '#2B2980';
+    ctx.beginPath();
+    ctx.roundRect(xBase + groupX, spY, bW, spH, [3,3,0,0]);
+    ctx.fill();
+
+    /* acc bar */
+    const acH = cH * (m.acc / yMax);
+    const acY = PAD.top + cH - acH;
+    ctx.fillStyle = '#3CB96A';
+    ctx.beginPath();
+    ctx.roundRect(xBase + groupX + bW + gap, acY, bW, acH, [3,3,0,0]);
+    ctx.fill();
+
+    /* value labels on bars (if bar tall enough) */
+    ctx.font = 'bold 9px Inter';
+    ctx.textAlign = 'center';
+    if (spH > 20) {
+      ctx.fillStyle = '#fff';
+      ctx.fillText(fmtShort(m.spend).replace(' ₽',''), xBase + groupX + bW/2, spY + 13);
+    }
+    if (acH > 20) {
+      ctx.fillStyle = '#fff';
+      ctx.fillText(fmtShort(m.acc).replace(' ₽',''), xBase + groupX + bW + gap + bW/2, acY + 13);
+    }
+
+    /* x-axis label */
+    ctx.fillStyle = '#999AAD';
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(m.label, xBase + step/2, H - PAD.bottom + 16);
+  });
+
+  /* cumulative line */
+  ctx.beginPath();
+  ctx.strokeStyle = '#5452CC';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.setLineDash([]);
+  months.forEach((m, i) => {
+    const x = PAD.left + step * i + step * 0.5;
+    const y = yPx(m.cumAcc);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  /* dots on cumulative line */
+  months.forEach((m, i) => {
+    const x = PAD.left + step * i + step * 0.5;
+    const y = yPx(m.cumAcc);
+    ctx.beginPath();
+    ctx.arc(x, y, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = '#5452CC';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([]);
+    ctx.stroke();
+  });
+
+  /* subscription cost dashed line */
+  const subY = yPx(subCost);
+  if (subY >= PAD.top && subY <= PAD.top + cH) {
+    ctx.beginPath();
+    ctx.strokeStyle = '#E53935';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.moveTo(PAD.left, subY);
+    ctx.lineTo(PAD.left + cW, subY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* label */
+    ctx.fillStyle = '#E53935';
+    ctx.font = 'bold 10px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText('Стоимость абонемента: ' + fmtShort(subCost), PAD.left + 4, subY - 5);
+  }
+
+  /* breakeven marker */
+  const beMonthIdx = months.findIndex(m => m.cumAcc >= subCost);
+  if (beMonthIdx >= 0) {
+    const x = PAD.left + step * beMonthIdx + step * 0.5;
+    const y = yPx(months[beMonthIdx].cumAcc);
+
+    /* vertical drop */
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(60,185,106,0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, PAD.top + cH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* star / marker */
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI*2);
+    ctx.fillStyle = '#3CB96A';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 9px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('✓', x, y + 3.5);
+
+    /* tag above */
+    ctx.fillStyle = '#3CB96A';
+    ctx.font = 'bold 10px Inter';
+    ctx.textAlign = 'center';
+    const tag = '✓ Окупаемость';
+    const tw = ctx.measureText(tag).width;
+    ctx.fillStyle = '#3CB96A';
+    ctx.fillText(tag, x, y - 14);
+  }
+
+  /* axes */
+  ctx.strokeStyle = '#E0E0E8';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(PAD.left, PAD.top);
+  ctx.lineTo(PAD.left, PAD.top + cH);
+  ctx.lineTo(PAD.left + cW, PAD.top + cH);
+  ctx.stroke();
+}
+
+/* ── fill helpers ── */
+function getFillVal()   { return parseFloat(document.getElementById('fill-val').value) || 0; }
+function fillAll()      { const v=getFillVal(); spendValues=rows.map(()=>v); refreshInputs(); recalc(); }
+function fillWeekdays() { const v=getFillVal(); rows.forEach((r,i)=>{ if(!r.isWeekend) spendValues[i]=v; }); refreshInputs(); recalc(); }
+function fillWeekends() { const v=getFillVal(); rows.forEach((r,i)=>{ if(r.isWeekend)  spendValues[i]=v; }); refreshInputs(); recalc(); }
+function clearAll()     { spendValues=rows.map(()=>0); refreshInputs(); recalc(); }
+
+function applyTemplate() {
+  // dayIdx: 0=Sun,1=Mon,...,6=Sat
+  const tmpl = {};
+  [0,1,2,3,4,5,6].forEach(d => {
+    const inp = document.getElementById(`wt-${d}`);
+    tmpl[d] = inp ? (parseFloat(inp.value) || 0) : 0;
+  });
+  rows.forEach((r, i) => { spendValues[i] = tmpl[r.dayIdx]; });
+  refreshInputs();
+  recalc();
+}
+
+function fillAllSame() {
+  const v = getFillVal();
+  [0,1,2,3,4,5,6].forEach(d => {
+    const inp = document.getElementById(`wt-${d}`);
+    if (inp) inp.value = v || '';
+  });
+  applyTemplate();
+}
+
+function refreshInputs() {
+  rows.forEach((_,i)=>{
+    const inp = document.querySelector(`.spend-inp[data-idx="${i}"]`);
+    if (inp) inp.value = spendValues[i] || '';
+  });
+}
+
+function rebuild() { buildRows(); renderTable(); recalc(); }
+
+document.getElementById('start-date').addEventListener('change', rebuild);
+document.getElementById('num-days').addEventListener('change', rebuild);
+['rate','sub-cost','init-bop'].forEach(id =>
+  document.getElementById(id).addEventListener('input', recalc)
+);
+window.addEventListener('resize', () => {
+  /* redraw chart on resize */
+  const { subCost } = getS();
+  /* collect monthly data from last recalc — just call recalc */
+  recalc();
+});
+
+/* init */
+rebuild();
+// Default template: weekdays 1M, weekends 0
+document.getElementById('wt-1').value = 1000000;
+document.getElementById('wt-2').value = 1000000;
+document.getElementById('wt-3').value = 1000000;
+document.getElementById('wt-4').value = 1000000;
+document.getElementById('wt-5').value = 1000000;
+document.getElementById('wt-6').value = 0;
+document.getElementById('wt-0').value = 0;
+document.getElementById('fill-val').value = 1000000;
+applyTemplate();
+</script>
+</body>
+</html>
